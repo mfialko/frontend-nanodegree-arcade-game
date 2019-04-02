@@ -22,12 +22,15 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
+        results = doc.createElement('h1'),
         lastTime;
 
     canvas.width = 505;
     canvas.height = 606;
+    results.id = 'results';    
+    doc.body.appendChild(results);
     doc.body.appendChild(canvas);
-
+    
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -78,8 +81,9 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt) {
+        
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -93,8 +97,35 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        player.update();
+
+        if ( Math.round(player.y / 80) === 0 ) {
+            player.update();
+            let i=getRandNum(0,2);
+            if (i===1) {
+                gem.update();
+            } else {
+                gem.get(0);
+            }
+            
+        }
+
+        doc.getElementById('results').innerHTML = `High score: ${player.HighScore} \u00A0\u00A0\u00A0\u00A0 Score: ${player.score}`;
     }
+    
+    function checkCollisions() {
+        allEnemies.forEach(function(enemy) {
+            if ( Math.round(enemy.x / 100) === Math.round(player.x / 100) && 
+                 Math.round(enemy.y / 80) === Math.round(player.y / 80) ) {
+                    player.reset();
+
+            }
+        });
+ 
+        if (player.x === Math.round(gem.x/100) *100 &&  player.y === Math.round(gem.y/80)*80-20  ) {
+            gem.get();
+        }
+    }
+    
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -108,10 +139,10 @@ var Engine = (function(global) {
          */
         var rowImages = [
                 'images/water-block.png',   // Top row is water
-                'images/stone-block.png',   // Row 1 of 3 of stone
-                'images/stone-block.png',   // Row 2 of 3 of stone
-                'images/stone-block.png',   // Row 3 of 3 of stone
-                'images/grass-block.png',   // Row 1 of 2 of grass
+                'images/stone-block.png',   // Row 1 of 4 of stone
+                'images/stone-block.png',   // Row 2 of 4 of stone
+                'images/stone-block.png',   // Row 3 of 4 of stone
+                'images/stone-block.png',   // Row 4 of 4 of stone
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
             numRows = 6,
@@ -137,6 +168,8 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
+        
+        
 
         renderEntities();
     }
@@ -152,8 +185,9 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
+        
         player.render();
+        gem.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -173,7 +207,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/GemOrange.png'
     ]);
     Resources.onReady(init);
 
