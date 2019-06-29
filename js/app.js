@@ -21,7 +21,8 @@ const //borders for enemy respawn
     maxAddSpeed = 45,
     //deltas
     deltaForEnemy = 60, 
-    deltaForGem = 15,
+    deltaXForGem = 15,
+    deltaYForGem = 35,
     gemBonusScore = 5,
     playerBonusScore = 1;   
 
@@ -50,6 +51,15 @@ Enemy.prototype.update = function(dt) {
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+
+Enemy.prototype.checkCollisions = function() {
+    allEnemies.forEach(function(enemy) {
+        if ( Math.round(enemy.x / stepX) === Math.round(player.x / stepX) && 
+             Math.round(enemy.y / stepY) === Math.round(player.y / stepY) ) {
+                player.reset();
+        }
+    });
+}
 
 const Player = function() {
     this.x = playerPosX;
@@ -102,27 +112,32 @@ Player.prototype.reset = function() {
     alert("Your score: " + this.score);
     this.score = 0;   
     allEnemies.forEach(function(enemy) {
+        //slower speed, after player respawn
         enemy.speed = getRandNum(15, 85);
     }); 
 };
 
 const Gem = function() {
     //Making gem on random column and row
-    this.x = stepX * getRandNum(0, 5) + deltaForGem;
+    this.x = stepX * getRandNum(0, 5) + deltaXForGem;
     this.y = stepY * getRandNum(1, 4);
     this.sprite = 'images/GemOrange.png';
 }
+
 Gem.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
-Gem.prototype.get = function(score = gemBonusScore) {
-    //Gem hiding after the player got it
-    this.x = -100;
-    this.y = -200;
-    player.score += score;
+
+Gem.prototype.checkCollisions = function(score = gemBonusScore) { 
+    if (player.x === gem.x - deltaXForGem &&  player.y === gem.y - deltaYForGem) {
+        //Gem hiding after the player got it
+        this.x = -100;
+        this.y = -200;
+        player.score += score;
+    }  
 }
 Gem.prototype.update = function() {
-    this.x = stepX * getRandNum(0, 5) + deltaForGem;
+    this.x = stepX * getRandNum(0, 5) + deltaXForGem;
     this.y = stepY * getRandNum(1, 4);
 }
 
@@ -135,7 +150,8 @@ function getEnemies() {
     for (let i = 0; i < numOfAnimals; i++) {
         let diffSpeed = getRandNum(minStartSpeed, maxStartSpeed);
         let diffRow = getRandNum(1, 5);
-    if (i < 4) {
+    if (i < 4) {  
+        //to fill all the rows with enemies
         allEnemies[i] = new Enemy(i + 1, diffSpeed);
     } else {
         allEnemies[i] = new Enemy(diffRow, diffSpeed);}
