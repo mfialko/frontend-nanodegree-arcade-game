@@ -1,5 +1,7 @@
 # Classic Arcade Game Clone Project
 
+[Play](https://mfialko.github.io/frontend-nanodegree-arcade-game/)
+
 ## Table of Contents
 
 - [Instructions](#instructions)
