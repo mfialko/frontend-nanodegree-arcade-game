@@ -1,6 +1,6 @@
 # Classic Arcade Game Clone Project
 
-[Play](https://mfialko.github.io/frontend-nanodegree-arcade-game/)
+[<ins>**Play**</ins>](https://mfialko.github.io/frontend-nanodegree-arcade-game/)
 
 ## Table of Contents
 
